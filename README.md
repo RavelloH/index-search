@@ -100,3 +100,66 @@ async function search(words) {
 }
 
 ```
+不过上面的是同步进行的搜索，网络情况较差的话可能需要较长时间。下面是改成并发的版本：
+```js
+async function search(words) {
+  if (!Array.isArray(words)) {
+    words = words.split('');
+  }
+  const total = words.length;
+  const charDataList = [];
+
+  const fetchPromises = words.map(async (char, idx) => {
+    try {
+      const res = await fetch(`/search/${char}.json`);
+      const json = await res.json();
+      charDataList[idx] = json.data;
+    } catch (error) {
+      console.error(`Error fetching ${char}:`, error);
+    }
+  });
+
+  await Promise.all(fetchPromises);
+
+  const resultMap = {};
+  charDataList.forEach((charData, idx) => {
+    charData.forEach((item) => {
+      const { src, index: positions } = item;
+      if (!resultMap[src]) {
+        resultMap[src] = Array(charDataList.length)
+          .fill(null)
+          .map(() => []);
+      }
+      resultMap[src][idx] = positions;
+    });
+  });
+
+  const matched = [];
+  for (const src in resultMap) {
+    const indicesArr = resultMap[src];
+    if (indicesArr.every((arr) => arr.length > 0)) {
+      let found = false;
+      indicesArr[0].forEach((pos) => {
+        let consecutive = true;
+        for (let i = 1; i < indicesArr.length; i++) {
+          if (!indicesArr[i].includes(pos + i)) {
+            consecutive = false;
+            break;
+          }
+        }
+        if (consecutive) found = true;
+      });
+      if (found) matched.push(src);
+    }
+  }
+
+  matched.sort((a, b) => {
+    const [ay, am, ad] = a.split("/");
+    const [by, bm, bd] = b.split("/");
+    return new Date(by, bm - 1, bd) - new Date(ay, am - 1, ad);
+  });
+
+  return matched;
+}
+
+```
