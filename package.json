@@ -1,0 +1,25 @@
+{
+  "name": "index-search",
+  "version": "1.1.0",
+  "description": "单字字典倒排式关联索引的静态资源搜索方案",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RavelloH/index-search.git"
+  },
+  "keywords": [
+    "search"
+  ],
+  "author": "RavelloH",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/RavelloH/index-search/issues"
+  },
+  "homepage": "https://github.com/RavelloH/index-search#readme",
+  "dependencies": {
+    "rlog-js": "^1.4.2"
+  }
+}
