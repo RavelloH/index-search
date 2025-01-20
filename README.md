@@ -15,6 +15,10 @@
 ## 使用
 先index，再search。
 
+```
+npm i index-search
+```
+
 ### index
 ```javascript
 const indexSearch = require("index-search");
